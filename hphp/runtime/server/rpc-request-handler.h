@@ -45,7 +45,7 @@ struct RPCRequestHandler : RequestHandler {
 
   // implementing RequestHandler
   void handleRequest(Transport* transport) override;
-  void abortRequest(Transport* transport) override;
+  virtual void abortRequest(Transport* transport) override;
 
   static void cleanupState();
 
