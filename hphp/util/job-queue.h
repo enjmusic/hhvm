@@ -474,7 +474,7 @@ protected:
   void* m_func{nullptr};
   ContextType m_context{};
   bool m_stopped{false};
-  TJob m_job{nullptr};
+  TJob m_job{};
 
 private:
   QueueType* m_queue{nullptr};
