@@ -439,7 +439,7 @@ struct JobQueueWorker {
         } else {
           doJob(job);
         }
-        m_job = nullptr;
+        m_job{};
 
         if (countActive) {
           if (!m_queue->decActiveWorker() && waitable) {
@@ -451,6 +451,7 @@ struct JobQueueWorker {
           }
         }
       } catch (const typename QueueType::StopSignal&) {
+        m_job{};
         m_stopped = true; // queue is empty and stopped, so we are done
       }
     }
