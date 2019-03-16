@@ -51,6 +51,7 @@ static struct ServerExtension final : Extension {
     HHVM_FE(xbox_post_message);
     HHVM_FE(xbox_task_start);
     HHVM_FE(xbox_task_status);
+    HHVM_FE(xbox_task_stop);
     HHVM_FE(xbox_task_result);
     HHVM_FE(xbox_process_call_message);
     HHVM_FE(xbox_get_thread_timeout);
@@ -186,6 +187,11 @@ Resource HHVM_FUNCTION(xbox_task_start,
 bool HHVM_FUNCTION(xbox_task_status,
                    const Resource& task) {
   return XboxServer::TaskStatus(task);
+}
+
+bool HHVM_FUNCTION(xbox_task_stop,
+                   const Resource& task) {
+  return XboxServer::TaskStop(task);
 }
 
 int64_t HHVM_FUNCTION(xbox_task_result,

@@ -151,6 +151,17 @@ function xbox_task_start(string $message): resource;
 function xbox_task_status(resource $task): bool;
 
 /**
+ * Stops a local xbox task
+ *
+ * @param resource $task - The xbox task object created by xbox_task_start().
+ *
+ * @return bool - TRUE if successfully stopped, FALSE otherwise.
+ *
+ */
+<<__HipHopSpecific, __Native>>
+function xbox_task_stop(resource $task): bool;
+
+/**
  * Block and wait for xbox task's result.
  *
  * @param resource $task - The xbox task object created by xbox_task_start().

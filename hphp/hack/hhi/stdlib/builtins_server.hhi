@@ -33,6 +33,8 @@ function xbox_task_start(string $message);
 <<__PHPStdLib>>
 function xbox_task_status(resource $task);
 <<__PHPStdLib>>
+function xbox_task_stop(resource $task);
+<<__PHPStdLib>>
 function xbox_task_result(resource $task, int $timeout_ms, &$ret);
 <<__PHPStdLib>>
 function xbox_process_call_message(string $msg);

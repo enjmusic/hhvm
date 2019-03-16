@@ -448,6 +448,12 @@ bool XboxServer::TaskStatus(const Resource& task) {
   return cast<XboxTask>(task)->getJob()->isDone();
 }
 
+bool XboxServer::TaskStop(const Resource& task) {
+  auto transport = cast<XboxTask>(task)->getJob();
+  s_xbox_request_handler->abortRequest(transport);
+  return true;
+}
+
 int XboxServer::TaskResult(const Resource& task, int timeout_ms, Variant *ret) {
   return TaskResult(cast<XboxTask>(task)->getJob(), timeout_ms, ret);
 }

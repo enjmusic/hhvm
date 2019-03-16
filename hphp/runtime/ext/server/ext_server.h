@@ -61,6 +61,8 @@ Resource HHVM_FUNCTION(xbox_task_start,
                        const String& message);
 bool HHVM_FUNCTION(xbox_task_status,
                    const Resource& task);
+bool HHVM_FUNCTION(xbox_task_stop,
+                   const Resource& task);
 int64_t HHVM_FUNCTION(xbox_task_result,
                       const Resource& task,
                       int64_t timeout_ms,
