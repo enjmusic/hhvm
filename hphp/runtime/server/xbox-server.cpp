@@ -111,9 +111,6 @@ static THREAD_LOCAL(std::string, s_xbox_prev_req_init_doc);
 struct XboxRequestHandler : RPCRequestHandler {
   XboxRequestHandler() : RPCRequestHandler(
     (*s_xbox_server_info)->getTimeoutSeconds().count(), Info) {}
-  // void abortRequest() override {
-
-  // }
   static bool Info;
 };
 
@@ -136,15 +133,11 @@ struct XboxWorker
       job->onRequestStart(job->getStartTimer());
       createRequestHandler()->run(job);
       destroyRequestHandler();
+      m_job = nullptr;
       job->decRefCount();
     } catch (...) {
       Logger::Error("RpcRequestHandler leaked exceptions");
     }
-  }
-
-  void abortJob(XboxTransport *job) override {
-    stop();
-    m_func->abort();
   }
 private:
   RequestHandler *createRequestHandler() {
@@ -459,9 +452,9 @@ bool XboxServer::TaskStatus(const Resource& task) {
 }
 
 bool XboxServer::TaskStop(const Resource& task) {
+  assertx(s_dispatcher);
   auto transport = cast<XboxTask>(task)->getJob();
-  abortJob(transport);
-  return true;
+  return s_dispatcher->stopWorker(transport->getWorker());
 }
 
 int XboxServer::TaskResult(const Resource& task, int timeout_ms, Variant *ret) {

@@ -211,6 +211,7 @@ void AsyncFuncImpl::start() {
     pthread_attr_setstack(&m_attr, m_threadStack, rlim.rlim_cur);
   }
 
+  // pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &m_threadId);
   pthread_create(&m_threadId, &m_attr, ThreadFunc, (void*)this);
   assert(m_threadId);
   s_count++;

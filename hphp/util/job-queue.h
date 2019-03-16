@@ -433,11 +433,14 @@ struct JobQueueWorker {
         bool expired = false;
         TJob job = m_queue->dequeueMaybeExpired(m_id, s_numaNode, countActive,
                                                 &expired, highPri);
+        m_job = job;
         if (expired) {
           abortJob(job);
         } else {
           doJob(job);
         }
+        m_job = nullptr;
+
         if (countActive) {
           if (!m_queue->decActiveWorker() && waitable) {
             Lock lock(m_queue);
@@ -464,12 +467,14 @@ struct JobQueueWorker {
   int id() { return m_id; }
   void* func() { return m_func; }
   bool stopped() { return m_stopped; }
+  bool isRunningJob(TJob toCheck) { return m_job == toCheck; }
 
 protected:
   int m_id{-1};
   void* m_func{nullptr};
   ContextType m_context{};
   bool m_stopped{false};
+  TJob m_job{nullptr};
 
 private:
   QueueType* m_queue{nullptr};
@@ -589,6 +594,30 @@ struct JobQueueDispatcher : IHostHealthObserver {
       return numActiveThreads();
     }();
     if (actives < target) addWorker();
+  }
+
+  /**
+   * Shut down a running worker.
+   */
+  bool stopWorkerRunningJob(typename TWorker::JobType job) {
+    Lock lock(m_mutex);
+
+    bool found = false;
+    for (auto it = m_workers.begin(); it != m_workers.end(); ) {
+      auto worker = *it;
+      if (worker->isRunningJob(job)) {
+        found = true;
+        worker->stop();
+        m_stoppedWorkers.insert(worker);
+        funcFrom(worker)->cancel();
+        m_workers.erase(it);
+        break;
+      }
+
+      ++it;
+    }
+
+    return found;
   }
 
   /**
