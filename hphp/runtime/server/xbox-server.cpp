@@ -133,26 +133,20 @@ struct XboxWorker
       string reqInitDoc = job->getHeader("ReqInitDoc");
       *s_xbox_prev_req_init_doc = reqInitDoc;
 
-      jobInflight = true;
       job->onRequestStart(job->getStartTimer());
       createRequestHandler()->run(job);
-      if (jobInflight) finishJob(job);
+      destroyRequestHandler();
+      job->decRefCount();
     } catch (...) {
       Logger::Error("RpcRequestHandler leaked exceptions");
     }
   }
 
   void abortJob(XboxTransport *job) override {
-    s_xbox_request_handler->abortRequest(job);
-    finishJob(job);
+    stop();
+    m_func->abort();
   }
 private:
-  void finishJob(XboxTransport *job) {
-    destroyRequestHandler();
-    job->decRefCount();
-    jobInflight = false;
-  }
-
   RequestHandler *createRequestHandler() {
     if (!*s_xbox_server_info) {
       *s_xbox_server_info = std::make_shared<XboxServerInfo>();
@@ -466,8 +460,7 @@ bool XboxServer::TaskStatus(const Resource& task) {
 
 bool XboxServer::TaskStop(const Resource& task) {
   auto transport = cast<XboxTask>(task)->getJob();
-  this->abortJob(transport);
-  // s_xbox_request_handler->abortRequest(transport);
+  abortJob(transport);
   return true;
 }
 
