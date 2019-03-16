@@ -167,8 +167,6 @@ struct XboxTransport final : Transport, Synchronizable {
     }
   }
 
-  void setWorker(XboxWorker)
-
 private:
   std::atomic<int> m_refCount;
 

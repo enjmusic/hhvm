@@ -454,7 +454,7 @@ bool XboxServer::TaskStatus(const Resource& task) {
 bool XboxServer::TaskStop(const Resource& task) {
   assertx(s_dispatcher);
   auto transport = cast<XboxTask>(task)->getJob();
-  return s_dispatcher->stopWorker(transport->getWorker());
+  return s_dispatcher->stopWorkerRunningJob(transport);
 }
 
 int XboxServer::TaskResult(const Resource& task, int timeout_ms, Variant *ret) {
